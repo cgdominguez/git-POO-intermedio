@@ -214,12 +214,260 @@
 
   Contribución creada por: Martín Álvarez (Platzi Contributor)
 
+//Object.defineProperty
+  El método defineProperty de la superclase Object no solo nos permite definir nuevos atributos en un objeto, sino también configurar las siguientes propiedades:
 
+  Configurable: indica si el nuevo atributo puede ser eliminado.
+  Enumerable: indica si el nuevo atributo podrá ser mostrado mediante funciones que listen las propiedades de un objeto. Hay excepciones en las que igual puede ser visualizado un atributo que tenga definido como false la propiedad enumerable.
+  Writable: indica si el nuevo atributo puede ser modificado de valor.
+  Normalmente, estas propiedades por defecto son definidas como true por JavaScript, sin embargo, si generamos los atributos de un objeto con Object.defineProperty, podríamos definirlas a nuestro gusto.
 
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+      this.approvedCourses.push(newCourse);
+    }
+  };
 
+  Object.defineProperty(juan, "nombreNuevaPropiedad", {
+    value: "JavaScript", // Valor que tendrá
+    enumerable: false,
+    writable: true,
+    configurable: false,
+  });
 
+  Accesibilidad a los atributos de un objeto
+  Con configurable, enumerable y writable podemos limitar el acceso y modificación de los atributos de un objeto. Veamos su funcionamiento mediante un par de ejemplos:
 
+  Atributos que no puedan ser listados
+  Definimos enumerable como false. Este atributo recién creado no se podrá visualizar si por ejemplo intentamos listar las llaves del objeto usando Object.keys:
 
+  // Definimos el objeto
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+      this.approvedCourses.push(newCourse);
+    }
+  };
+
+  Object.defineProperty(juan, "navigator", { // Creamos un nuevo atributo
+    value: "Chrome",
+    enumerable: false,
+    writable: true,
+    configurable: true,
+  });
+
+  console.log( // Imprimimos las llaves del objeto
+    Object.keys(juan)
+  ); // [ 'name', 'age', 'approvedCourses', 'addCourse' ]
+
+  Sin embargo, hay una excepción si usamos Object.getOwnPropertyNames:
+
+  // Definimos el objeto
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+      this.approvedCourses.push(newCourse);
+    }
+  };
+
+  Object.defineProperty(juan, "navigator", { // Creamos un nuevo atributo
+    value: "Chrome",
+    enumerable: false, // 👀
+    writable: true,
+    configurable: true,
+  });
+
+  console.log( // Imprimimos las propiedades del objeto
+    Object.getOwnPropertyNames(juan)
+  ); // [ 'name', 'age', 'approvedCourses', 'addCourse', 'navigator' ] 👈 Ya nos aparece
+
+  Atributos que no se puedan eliminar
+  Para ello definimos configurable como false en la nueva propiedad:
+
+  // Definimos el objeto
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+      this.approvedCourses.push(newCourse);
+    }
+  };
+
+  Object.defineProperty(juan, "terminal", { // Creamos un nuevo atributo
+    value: "WSL",
+    enumerable: true,
+    writable: true,
+    configurable: false, // 👀
+  });
+
+  console.log( // Mostramos las propiedades del objeto previamente... 👁👁
+    Object.keys(juan)
+  ); // [ 'name', 'age', 'approvedCourses', 'addCourse', 'terminal' ]
+
+  delete terminal; // Intentamos eliminar ❌
+
+  console.log( // Listamos los atributos para comprobar si se eliminó `terminal` 🤔
+    Object.keys(juan)
+  ); // [ 'name', 'age', 'approvedCourses', 'addCourse', 'terminal' ] 👈 NO se eliminó
+
+  Atributos que no se puedan sobreescribir
+  Definimos writable como false:
+
+  // Definimos el objeto
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+      this.approvedCourses.push(newCourse);
+    }
+  };
+
+  Object.defineProperty(juan, "editor", { // Creamos un nuevo atributo
+    value: "VSCode",
+    enumerable: true,
+    writable: false,
+    configurable: true,
+  });
+
+  console.log(juan.editor); // "VSCode"
+
+  juan.editor = "Atom"; // Intentamos sobreescribirlo
+
+  console.log(juan.editor); // "VSCode" 👈 No cambió
+
+  Qué es Object.seal y Object.freeze
+  El método seal “sella” un determinado objeto. Es decir:
+
+  Impide que nuevas propiedades sean agregadas.
+  Define como configurable: false todos los atributos del objeto, con lo que impide que sean borradas.
+  Los atributos sí pueden ser modificados, ya que la propiedad writable permanece asignado como true.
+  // Definimos el objeto
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+      this.approvedCourses.push(newCourse);
+    }
+  };
+
+  Object.seal(juan); // "Sellamos" el objeto
+
+  // Listamos para saber las llaves actuales:
+  console.log(Object.keys(juan)); // [ 'name', 'age', 'approvedCourses', 'addCourse' ]
+
+  delete age; // Intentamos eliminar un atributo del objeto
+
+  // Listamos para observar si hubo cambios:
+  console.log(Object.keys(juan)); // [ 'name', 'age', 'approvedCourses', 'addCourse' ]
+
+  El método freeze “congela” un objeto. Es decir:
+
+  Impide que se le agreguen nuevas propiedades.
+  Impide que sean eliminadas propiedades ya existentes.
+  Evita que sus propiedades writable, enumerable y configurable sean modificadas.
+  // Definimos el objeto
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+      this.approvedCourses.push(newCourse);
+    }
+  };
+
+  Object.freeze(juan); // "Congelamos" el objeto
+
+  // Listamos para saber las llaves actuales:
+  console.log(Object.keys(juan)); // [ 'name', 'age', 'approvedCourses', 'addCourse' ]
+
+  delete approvedCourses; // Intentamos eliminar un atributo del objeto
+  juan.name = "Carlitos"; // Intentamos sobreescribir el valor de este atributo
+
+  // Listamos para observar si hubo cambios:
+  console.log(Object.keys(juan)); // [ 'name', 'age', 'approvedCourses', 'addCourse' ]
+  // Verificamos si cambió el valor de `name`:
+  console.log(juan.name); // "Juanito"
+
+  Conozcamos ahora cómo funciona la memoria en JavaScript. 🤔👨‍💻
+
+  Contribución creada por: Martín Álvarez (Platzi Contributor) con el aporte de Zajith Corro Viveros.
+
+// funcion de la memoria en JS
+  La memoria en JavaScript funciona de la siguiente manera:
+
+  Las variables son referencias a un espacio en memoria.
+  Los navegadores web usan dos tipos de memorias: Stack y Heap.
+  La memoria Stack es muy rápida, pero sin tanto espacio. Aquí se guardan los valores primitivos (booleanos, strings, números…).
+  La memoria Heap es más lenta, pero permite guardar enormes cantidades de información (son como los tornados: grandes, lentos y desordenados). En esta memoria guardamos los valores de los objetos
+  Cómo es el almacenamiento de objetos en JavaScript
+  Cuando creamos variables en JavaScript (aplicable a casi cualquier otro lenguaje), ejecutamos 2 procesos:
+
+  El primero es la inicialización, es decir, le decimos a JS que vamos a crear una nueva variable con un nombre en específico.
+
+  let name;
+  Lo segundo es la asignación: le indicamos a JavaScript que esa variable que generamos con ese nombre en específico tiene un valor.
+
+  let name; // Inicialización
+  name = "pepito"; // Asignación
+
+  let age = 28;
+  El nombre de las variables y el valor de estas se almacenan en la memoria stack, excepto cuando trabajamos con objetos.
+
+  Memoria Stack en JS
+  En memoria, el nombre de las variables apuntan a sus respectivos valores, sin embargo, cuando el valor a almacenar es un objeto, apuntan a otro apuntador (pointer o puntero) y este es el que en realidad apuntará al objeto en sí el cual se encontrará almacenado en la memoria heap.
+
+  Los objetos son almacenados en la memoria HEAP de JavaScript
+  Cuál es la forma incorrecta de copiar objetos
+  Si intentamos copiar un objeto en otra variable de esta manera:
+
+  const juanita = { // ORIGINAL
+    age: 15,
+    email: "juanita@juanita.com"
+  }
+
+  const nath = juanita; // COPIA
+  Cuando intentemos editar los valores de los atributos del objeto copia, los atributos del objeto original se verán igualmente afectados:
+
+  // Objeto original antes
+  console.log(juanita); // { age: 15, email: 'juanita@juanita.com' }
+
+  // Editamos sólo el objeto copia
+  nath.age = 20;
+  nath.email = "nath@email.com"
+  console.log(nath); // { age: 20, email: 'nath@email.com' }
+
+  // Objeto original después de editar el objeto copia:
+  console.log(juanita); // { age: 20, email: 'nath@email.com' }
+  Lo anterior sucede porque cuando copiamos un objeto lo que en realidad estamos copiando es su referencia en la memoria, en otras palabras copiamos a su apuntador o pointer. Por ello, al modificar los valores de las propiedades de la copia de un objeto también afectamos al original.
+
+  Cuando copiamos directamente un objeto en otra variable, en realidad copiamos su pointer o apuntador (JS)
+  Entonces, ¿Cómo solucionamos esto? Tenemos 2 formas de hacerlo en JavaScript: el shallow copy y el deep copy. Veamos a continuación cómo aplicar el primero. 🤔💪
+
+  Contribución creada por: Martín Álvarez (Platzi Contributor)
 
 
 

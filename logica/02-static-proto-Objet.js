@@ -51,13 +51,6 @@ console.log(Object.getOwnPropertyDescriptors(juan));// getOwnPropertyDescriptors
 
 // 
 
-Object.defineProperty(juan, "pruevaNASA" ,{
-    value:"extraterrestre",
-
-
-});      //sireve para crear nuevas propiedada en las que se le puede editrar las nuevas propiedades que nos da getOwnPropertyDescriptors
-// recive tres argumento /parametros ( nombre del objeto, el nombre del nuevo atributo /propiedad, {lista de atributos} 
-
 
 
 

@@ -1,0 +1,227 @@
+//01-static
+  Si declaramos una propiedad o método de una clase como static, podremos acceder a estos sin la necesidad de instanciar dicha clase o prototipo.
+
+  Este tipo de atributos/métodos no son exclusivos de JavaScript, sino de casi todos los lenguajes que soportan la programación orientada a objetos.
+
+  Declarando métodos y atributos static en JavaScript
+  De la siguiente manera podemos declarar atributos o métodos como static dentro de una clase (aplicable también a prototipos):
+
+  class Patito {
+    static sonidito = "cuak!";
+
+    static hacerSonidito() {
+      return "cuak! x2";
+    }
+  }
+
+  // Por fuera de clase Patito, podemos acceder a lo siguiente sin crear alguna instancia:
+  // Al atributo `sonidito`
+  console.log(Patito.sonidito)
+
+  // Al método `hacerSonidito`
+  console.log(Patito.hacerSonidito());
+  Métodos static de la superclase Object
+  El superprototipo Object posee algunos métodos de tipo static y como todos los objetos que creamos en JavaScript heredan funcionalidad de Object, podemos acceder a una lista de funciones static que vendrán por defecto en nuestros objetos creados.
+
+  Obtener las llaves de un objeto
+  El método keys del superprototipo Object nos permite obtener el nombre de las llaves de un objeto en una lista:
+
+  const objetito = {
+      name: "Juanito",
+      email: "juanito@frijolitos.io",
+      age: 18,
+  }
+
+  console.log(
+    Object.keys(objetito)
+  ); // [ 'name', 'email', 'age' ]
+  Podríamos obtener lo mismo con el método getOwnPropertyNames:
+
+  const objetito = {
+      name: "Juanito",
+      email: "juanito@frijolitos.io",
+      age: 18,
+  }
+
+  console.log(
+    Object.getOwnPropertyNames(objetito)
+  ); // [ 'name', 'email', 'age' ]
+  Obtener los pares llave-valor de un objeto
+  Con el método entries de Object conseguimos tener en listas separadas los llave-valor declarados en un objeto. Estas listas serán almacenadas en otra lista:
+
+  const objetito = {
+      name: "Juanito",
+      email: "juanito@frijolitos.io",
+      age: 18,
+  }
+
+  console.log(
+    Object.entries(objetito)
+  );
+
+  /* > Impresión en consola:
+  [
+    [ 'name', 'Juanito' ],
+    [ 'email', 'juanito@frijolitos.io' ],
+    [ 'age', 18 ]
+  ]
+  */
+  Conocer el límite de acceso de un objeto
+  Existe un método static propio de Object que es muy interesante: el método getOwnPropertyDescriptors.
+
+  const objetito = {
+      name: "Juanito",
+      email: "juanito@frijolitos.io",
+      age: 18,
+  }
+
+  console.log(
+    Object.getOwnPropertyDescriptors(objetito)
+  );
+  Esto nos devuelve un objeto con los atributos de nuestro objeto inicial. Cada atributo contiene un objeto con el valor correspondiente a dicha propiedad, además de 3 propiedades adicionales: writable, configurable y enumerable.
+
+  {
+    name: {
+      value: 'Juanito',
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    email: {
+      value: 'juanito@frijolitos.io',
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    age: {
+      value: 18,
+      writable: true,
+      enumerable: true,
+      configurable: true
+    }
+  }
+  Estas 3 propiedades son usadas por JavaScript internamente para indicar el límite de acceso y modificación que tiene un objeto. Con esto podríamos utilizar ciertas técnicas para manejar el encapsulamiento (uno de los pilares de la POO) de los objetos según lo que deseemos.
+
+  Veamos más ejemplos de los métodos estáticos del prototipo Object y sobre el comportamiento que puede tener this. 👨‍💻
+
+  Contribución creada por: Martín Álvarez (Platzi Contributor)
+
+//02-static-prototipo-objet Métodos estáticos del prototipo Object
+
+  Veamos unos ejemplos usando los métodos estáticos del prototipo Object. Además, podremos observar que this puede comportarse diferente según el contexto en donde se encuentre.
+
+  Antes de ello, en una carpeta, crea un archivo main.js el cual debe estar vinculado a un index.html creado en la misma ruta. Editaremos estos archivos en Visual Studio Code (puedes utilizar tu editor preferido) para realizar nuestras implementaciones y visualizaremos los outputs en la consola del navegador.
+
+  <!-- ARCHIVO HTML BASE -->
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso Intermedio de POO en JS</title>
+  </head>
+  <body>
+    <h1>Curso Intermedio de POO en JS</h1>
+
+    <script src="./main.js"></script>
+  </body>
+  </html>
+  Comportamiento de this en métodos estáticos
+  Vamos a crear un objeto con los siguientes atributos:
+
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      // `this` se usa para hacer referencia a la propiedad `approvedCourses`
+      // del objeto en cuestión.
+      this.approvedCourses.push(newCourse);
+    }
+  };
+  Ahora, utilicemos el método entries del prototipo Object pasándole como argumento nuestro objeto juan:
+
+  console.log(
+    Object.entries(juan)
+  );
+
+  /* > En consola obtenemos un output similar a este:
+  [
+    [ 'name', 'Juanito' ],
+    [ 'age', 18 ],
+    [ 'approvedCourses', [ 'Curso 1' ] ],
+    [ 'addCourse', [Function: addCourse] ]
+  ]
+  */
+  Como el resultado es un Array que contiene a otros del mismo tipo, podemos acceder a sus índices y subíndices respectivamente. Por tanto, si accedemos al índice donde está la función addCourse y lo mostramos en consola, obtendríamos lo siguiente:
+
+  console.log(
+    Object.entries(juan)[3][1]
+  );
+
+  /* > Mensaje en consola del navegador:
+  *f addCourse(newCourse) {
+    this.approvedCourses.push(newCourse);
+  }*
+  */
+  Si podemos acceder a la función de esta manera, en principio pensaríamos que es posible añadir un nuevo curso ejecutando la función desde ahí; sin embargo, esto nos produce un error:
+
+  Object.entries(juan)[3][1]("Curso 2");
+  Inconvenientes con this en un objeto al ejecutar métodos estáticos
+  Imprimamos en consola qué es this en cada ejecución del método addCourse. Cambiemos la estructura del objeto juan:
+
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      // A dónde a punta `this`:
+      console.log("This", this);
+      // Saber si el contexto de `this` tiene definida la propiedad `approvedCourses`:
+      console.log("This.approvedCourses", this.approvedCourses);
+
+      this.approvedCourses.push(newCourse);
+    }
+  };
+  Nuevamente, añadamos un curso accediendo al método addCourse desde la ejecución de Object.entries:
+
+  Object.entries(juan)[3][1]('Curso 3');
+  This apunta ahora al subarray creado por Object.entries y ya no hace referencia al objeto juan
+  En el navegador podremos observar que this apunta en realidad al subarray ["addCourse", function addCourse] generado por entries y ya no al objeto juan. Es por ello que cuando la función addCourse intenta ejecutarse no encuentra la propiedad approvedCourses en el subarray ["addCourse", function addCourse] que es donde ahora this hace referencia.
+
+  Crear propiedades con accesibilidad editable
+  Existe un método estático del prototipo Object llamado defineProperty que no solo nos permite crear un atributo con su respectivo valor en un objeto, sino también nos da la posibilidad de definir las propiedades writable, enumerable y configurable a nuestro gusto. Estas propiedades son las que limitan el acceso y modificación en un objeto de JavaScript:
+
+  const juan = {
+    name: "Juanito",
+    age: 18,
+    approvedCourses: ["Curso 1"],
+    addCourse(newCourse) {
+      console.log("This", this);
+      console.log("This.approvedCourses", this.approvedCourses);
+
+      this.approvedCourses.push(newCourse);
+    }
+  };
+
+  Object.defineProperty(juan, "pruebaNASA", {
+    value: "extraterrestres",
+    writable: true,
+    enumerable: true,
+    configurable: true
+  });
+  Veamos un poco más acerca de Object.defineProperty. 🤓💪
+
+  Contribución creada por: Martín Álvarez (Platzi Contributor)
+
+
+
+
+
+
+
+
+
+
+
+

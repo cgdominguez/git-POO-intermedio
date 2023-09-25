@@ -1,15 +1,3 @@
-const obj1 = {// objeto a copiar
-    a: "a",
-    b: "b",
-    c: {
-       d: "d",
-       e: "e", 
-    },
-    editA() {
-        this.a = "AAAAA";
-    }
-}; 
-
 function isObject(subject) {
     return typeof subject == "object" ;
 }
@@ -50,4 +38,23 @@ function deepCopy(subject) { // recibe un elemento string , array , objeto, nume
         }
     }
     return copySubject;    
-}
+};
+
+const studentBase= {
+    name: undefined,
+    email: undefined,
+    age: undefined,
+    approvedCurses: undefined,
+    learningPaths:undefined,
+    socialMedia:{
+        twitter:undefined,
+        instagram: undefined,
+        facebook:undefined,
+
+    },
+};
+
+const juan = deepCopy(studentBase); // copia todas las propiedades del objeto studentBaseo
+Object.seal(juan);
+Object.isSealed(juan);// el objeto juan tiene todas la propiedades estan protegidas
+Object.isFrozen(juan)// 
